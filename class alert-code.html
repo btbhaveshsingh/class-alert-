@@ -1,0 +1,538 @@
+<!<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Classalert - Schedule & Attendance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f7f9fb;
+    }
+
+    h1, h2 {
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    input, select {
+      padding: 8px;
+      margin-right: 10px;
+      width: 180px;
+    }
+
+    button {
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button.mark {
+      margin-right: 5px;
+      padding: 5px 10px;
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #e9ecef;
+    }
+
+    .status-present {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-absent {
+      color: red;
+      font-weight: bold;
+    }
+
+    .filter-group {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📚 Classalert - Schedule & Attendance</h1>
+
+  <div class="form-group">
+    <input type="text" id="student" placeholder="Student Name" />
+    <input type="text" id="subject" placeholder="Subject" />
+    <input type="text" id="day" placeholder="Day (e.g., Monday)" />
+    <input type="text" id="time" placeholder="Time (e.g., 10:00 AM)" />
+    <button onclick="addClass()">Add Class</button>
+  </div>
+
+  <div class="filter-group">
+    <label for="studentFilter"><strong>Filter by Student:</strong></label>
+    <select id="studentFilter" onchange="renderTable()">
+      <option value="All">All</option>
+    </select>
+  </div>
+
+  <table id="scheduleTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Subject</th>
+        <th>Day</th>
+        <th>Time</th>
+        <th>Attendance</th>
+        <th>Mark</th>
+      </tr>
+    </thead>
+    <tbody id="scheduleBody">
+      <!-- Class rows appear here -->
+    </tbody>
+  </table>
+
+  <script>
+    const schedule = [];
+    const studentsSet = new Set();
+
+    function addClass() {
+      const student = document.getElementById('student').value.trim();
+      const subject = document.getElementById('subject').value.trim();
+      const day = document.getElementById('day').value.trim();
+      const time = document.getElementById('time').value.trim();
+
+      if (student && subject && day && time) {
+        schedule.push({ student, subject, day, time, attendance: 'Not Marked' });
+        studentsSet.add(student);
+        updateStudentFilter();
+        renderTable();
+        document.getElementById('student').value = '';
+        document.getElementById('subject').value = '';
+        document.getElementById('day').value = '';
+        document.getElementById('time').value = '';
+      }
+    }
+
+    function updateStudentFilter() {
+      const filter = document.getElementById('studentFilter');
+      const selected = filter.value;
+      filter.innerHTML = '<option value="All">All</option>';
+      studentsSet.forEach(student => {
+        const option = document.createElement('option');
+        option.value = student;
+        option.text = student;
+        filter.appendChild(option);
+      });
+      filter.value = selected;
+    }
+
+    function markAttendance(index, status) {
+      schedule[index].attendance = status;
+      renderTable();
+    }
+
+    function renderTable() {
+      const table = document.getElementById('scheduleTable');
+      const body = document.getElementById('scheduleBody');
+      const filter = document.getElementById('studentFilter').value;
+      body.innerHTML = '';
+
+      const filteredSchedule = filter === 'All' ? schedule : schedule.filter(item => item.student === filter);
+
+      filteredSchedule.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.student}</td>
+          <td>${item.subject}</td>
+          <td>${item.day}</td>
+          <td>${item.time}</td>
+          <td class="${item.attendance === 'Present' ? 'status-present' : item.attendance === 'Absent' ? 'status-absent' : ''}">
+            ${item.attendance}
+          </td>
+          <td>
+            <button class="mark" onclick="markAttendance(${schedule.indexOf(item)}, 'Present')">Present</button>
+            <button class="mark" onclick="markAttendance(${schedule.indexOf(item)}, 'Absent')">Absent</button>
+          </td>
+        `;
+        body.appendChild(row);
+      });
+
+      table.style.display = filteredSchedule.length ? 'table' : 'none';
+    }
+  </script>
+
+</body>
+</html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <title>Classalert - Schedule & Attendance</title>
+
+  <style>
+
+    body {
+
+      font-family: Arial, sans-serif;
+
+      margin: 30px;
+
+      background-color: #f7f9fb;
+
+    }
+
+
+
+    h1, h2 {
+
+      color: #333;
+
+    }
+
+
+
+    .form-group {
+
+      margin-bottom: 15px;
+
+    }
+
+
+
+    input, select {
+
+      padding: 8px;
+
+      margin-right: 10px;
+
+      width: 180px;
+
+    }
+
+
+
+    button {
+
+      padding: 8px 12px;
+
+      background-color: #007bff;
+
+      color: white;
+
+      border: none;
+
+      border-radius: 4px;
+
+      cursor: pointer;
+
+      margin-top: 10px;
+
+    }
+
+
+
+    button.mark {
+
+      margin-right: 5px;
+
+      padding: 5px 10px;
+
+      font-size: 13px;
+
+    }
+
+
+
+    table {
+
+      width: 100%;
+
+      border-collapse: collapse;
+
+      margin-top: 30px;
+
+    }
+
+
+
+    th, td {
+
+      border: 1px solid #ccc;
+
+      padding: 12px;
+
+      text-align: left;
+
+    }
+
+
+
+    th {
+
+      background-color: #e9ecef;
+
+    }
+
+
+
+    .status-present {
+
+      color: green;
+
+      font-weight: bold;
+
+    }
+
+
+
+    .status-absent {
+
+      color: red;
+
+      font-weight: bold;
+
+    }
+
+
+
+    .filter-group {
+
+      margin-top: 20px;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+
+
+  <h1>📚 Classalert - Schedule & Attendance</h1>
+
+
+
+  <div class="form-group">
+
+    <input type="text" id="student" placeholder="Student Name" />
+
+    <input type="text" id="subject" placeholder="Subject" />
+
+    <input type="text" id="day" placeholder="Day (e.g., Monday)" />
+
+    <input type="text" id="time" placeholder="Time (e.g., 10:00 AM)" />
+
+    <button onclick="addClass()">Add Class</button>
+
+  </div>
+
+
+
+  <div class="filter-group">
+
+    <label for="studentFilter"><strong>Filter by Student:</strong></label>
+
+    <select id="studentFilter" onchange="renderTable()">
+
+      <option value="All">All</option>
+
+    </select>
+
+  </div>
+
+
+
+  <table id="scheduleTable" style="display: none;">
+
+    <thead>
+
+      <tr>
+
+        <th>Student</th>
+
+        <th>Subject</th>
+
+        <th>Day</th>
+
+        <th>Time</th>
+
+        <th>Attendance</th>
+
+        <th>Mark</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody id="scheduleBody">
+
+      <!-- Class rows appear here -->
+
+    </tbody>
+
+  </table>
+
+
+
+  <script>
+
+    const schedule = [];
+
+    const studentsSet = new Set();
+
+
+
+    function addClass() {
+
+      const student = document.getElementById('student').value.trim();
+
+      const subject = document.getElementById('subject').value.trim();
+
+      const day = document.getElementById('day').value.trim();
+
+      const time = document.getElementById('time').value.trim();
+
+
+
+      if (student && subject && day && time) {
+
+        schedule.push({ student, subject, day, time, attendance: 'Not Marked' });
+
+        studentsSet.add(student);
+
+        updateStudentFilter();
+
+        renderTable();
+
+        document.getElementById('student').value = '';
+
+        document.getElementById('subject').value = '';
+
+        document.getElementById('day').value = '';
+
+        document.getElementById('time').value = '';
+
+      }
+
+    }
+
+
+
+    function updateStudentFilter() {
+
+      const filter = document.getElementById('studentFilter');
+
+      const selected = filter.value;
+
+      filter.innerHTML = '<option value="All">All</option>';
+
+      studentsSet.forEach(student => {
+
+        const option = document.createElement('option');
+
+        option.value = student;
+
+        option.text = student;
+
+        filter.appendChild(option);
+
+      });
+
+      filter.value = selected;
+
+    }
+
+
+
+    function markAttendance(index, status) {
+
+      schedule[index].attendance = status;
+
+      renderTable();
+
+    }
+
+
+
+    function renderTable() {
+
+      const table = document.getElementById('scheduleTable');
+
+      const body = document.getElementById('scheduleBody');
+
+      const filter = document.getElementById('studentFilter').value;
+
+      body.innerHTML = '';
+
+
+
+      const filteredSchedule = filter === 'All' ? schedule : schedule.filter(item => item.student === filter);
+
+
+
+      filteredSchedule.forEach((item, index) => {
+
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+
+          <td>${item.student}</td>
+
+          <td>${item.subject}</td>
+
+          <td>${item.day}</td>
+
+          <td>${item.time}</td>
+
+          <td class="${item.attendance === 'Present' ? 'status-present' : item.attendance === 'Absent' ? 'status-absent' : ''}">
+
+            ${item.attendance}
+
+          </td>
+
+          <td>
+
+            <button class="mark" onclick="markAttendance(${schedule.indexOf(item)}, 'Present')">Present</button>
+
+            <button class="mark" onclick="markAttendance(${schedule.indexOf(item)}, 'Absent')">Absent</button>
+
+          </td>
+
+        `;
+
+        body.appendChild(row);
+
+      });
+
+
+
+      table.style.display = filteredSchedule.length ? 'table' : 'none';
+
+    }
+
+  </script>
+
+
+
+</body>
+
+</html>
